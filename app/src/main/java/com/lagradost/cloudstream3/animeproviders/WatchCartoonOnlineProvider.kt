@@ -1,16 +1,15 @@
 package com.lagradost.cloudstream3.animeproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
-import kotlinx.serialization.SerialName
 import org.jsoup.Jsoup
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
 import java.util.*
 
-
-import kotlinx.serialization.Serializable
 
 class WatchCartoonOnlineProvider : MainAPI() {
     override var name = "WatchCartoonOnline"
@@ -26,13 +25,13 @@ class WatchCartoonOnlineProvider : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val url = "https://www.wcostream.com/search"
 
-        var document =
+        var response =
             app.post(
                 url,
                 headers = mapOf("Referer" to url),
                 data = mapOf("catara" to query, "konuara" to "series")
-            ).document
-
+            ).text
+        var document = Jsoup.parse(response)
         var items = document.select("div#blog > div.cerceve").toList()
 
         val returnValue = ArrayList<SearchResponse>()
@@ -45,17 +44,7 @@ class WatchCartoonOnlineProvider : MainAPI() {
             val poster = fixUrl(header.selectFirst("> a > img")!!.attr("src"))
             val genreText = item.selectFirst("div.cerceve-tur-ve-genre")!!.ownText()
             if (genreText.contains("cartoon")) {
-                returnValue.add(
-                    TvSeriesSearchResponse(
-                        title,
-                        href,
-                        this.name,
-                        TvType.Cartoon,
-                        poster,
-                        null,
-                        null
-                    )
-                )
+                returnValue.add(TvSeriesSearchResponse(title, href, this.name, TvType.Cartoon, poster, null, null))
             } else {
                 val isDubbed = genreText.contains("dubbed")
                 val set: EnumSet<DubStatus> =
@@ -75,15 +64,15 @@ class WatchCartoonOnlineProvider : MainAPI() {
         }
 
         // "episodes-search", is used for finding movies, anime episodes should be filtered out
-        document =
+        response =
             app.post(
                 url,
                 headers = mapOf("Referer" to url),
                 data = mapOf("catara" to query, "konuara" to "episodes")
-            ).document
-
+            ).text
+        document = Jsoup.parse(response)
         items = document.select("#catlist-listview2 > ul > li")
-            .filter { it -> it?.text() != null && !it.text().toString().contains("Episode") }
+            .filter { it?.text() != null && !it.text().toString().contains("Episode") }
 
         for (item in items) {
             val titleHeader = item.selectFirst("a")
@@ -115,8 +104,7 @@ class WatchCartoonOnlineProvider : MainAPI() {
 
         return if (!isMovie) {
             val title = document.selectFirst("td.vsbaslik > h2")!!.text()
-            val poster =
-                fixUrlNull(document.selectFirst("div#cat-img-desc > div > img")?.attr("src"))
+            val poster = fixUrlNull(document.selectFirst("div#cat-img-desc > div > img")?.attr("src"))
             val plot = document.selectFirst("div.iltext")!!.text()
             val genres = document.select("div#cat-genre > div.wcobtn > a").map { it.text() }
             val episodes = document.select("div#catlist-listview > ul > li > a").reversed().map {
@@ -172,7 +160,7 @@ class WatchCartoonOnlineProvider : MainAPI() {
                 url,
                 this.name,
                 TvType.TvSeries,
-                listOf(Episode(url, title)),
+                listOf(Episode(url,title)),
                 null,
                 null,
                 description,
@@ -182,14 +170,14 @@ class WatchCartoonOnlineProvider : MainAPI() {
         }
     }
 
-    @Serializable data class LinkResponse(
-        //  @SerialName("cdn")
+    data class LinkResponse(
+        //  @JsonProperty("cdn")
         //  val cdn: String,
-        @SerialName("enc")
+        @JsonProperty("enc")
         val enc: String,
-        @SerialName("hd")
+        @JsonProperty("hd")
         val hd: String,
-        @SerialName("server")
+        @JsonProperty("server")
         val server: String,
     )
 
@@ -225,9 +213,7 @@ class WatchCartoonOnlineProvider : MainAPI() {
 
         rhino.evaluateString(scope, decodeBase64 + foundJS, "JavaScript", 1, null)
         val jsEval = scope.get("returnValue", scope) ?: return false
-        val src = fixUrl(
-            Regex("src=\"(.*?)\"").find(jsEval as String)?.groupValues?.get(1) ?: return false
-        )
+        val src = fixUrl(Regex("src=\"(.*?)\"").find(jsEval as String)?.groupValues?.get(1) ?: return false)
 
         val embedResponse = app.get(
             (src),
@@ -237,7 +223,7 @@ class WatchCartoonOnlineProvider : MainAPI() {
         val getVidLink = fixUrl(
             Regex("get\\(\"(.*?)\"").find(embedResponse.text)?.groupValues?.get(1) ?: return false
         )
-        val link = app.get(
+        val linkResponse = app.get(
             getVidLink, headers = mapOf(
                 "sec-ch-ua" to "\"Chromium\";v=\"91\", \" Not;A Brand\";v=\"99\"",
                 "sec-ch-ua-mobile" to "?0",
@@ -250,7 +236,9 @@ class WatchCartoonOnlineProvider : MainAPI() {
                 "user-agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
                 "cookie" to "countrytabs=0"
             )
-        ).parsed<LinkResponse>()
+        )
+
+        val link = mapper.readValue<LinkResponse>(linkResponse.text)
 
         val hdLink = "${link.server}/getvid?evid=${link.hd}"
         val sdLink = "${link.server}/getvid?evid=${link.enc}"

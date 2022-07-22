@@ -99,16 +99,12 @@ class AcraApplication : Application() {
             return context?.removeKeys(folder)
         }
 
-        inline fun <reified T : Any> setKey(path: String, value: T) {
+        fun <T> setKey(path: String, value: T) {
             context?.setKey(path, value)
         }
 
-        inline fun <reified T : Any> setKey(folder: String, path: String, value: T?) {
-            if (value == null) {
-                context?.removeKey(folder, path)
-            } else {
-                context?.setKey(folder, path, value)
-            }
+        fun <T> setKey(folder: String, path: String, value: T) {
+            context?.setKey(folder, path, value)
         }
 
         inline fun <reified T : Any> getKey(path: String, defVal: T?): T? {

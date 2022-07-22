@@ -1,30 +1,27 @@
 package com.lagradost.cloudstream3.extractors.helper
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.AcraApplication.Companion.getKey
 import com.lagradost.cloudstream3.AcraApplication.Companion.setKey
 import com.lagradost.cloudstream3.app
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 class WcoHelper {
     companion object {
         private const val BACKUP_KEY_DATA = "github_keys_backup"
 
-        @Serializable
         data class ExternalKeys(
-            @SerialName("wco_key")
+            @JsonProperty("wco_key")
             val wcoKey: String? = null,
-            @SerialName("wco_cipher_key")
+            @JsonProperty("wco_cipher_key")
             val wcocipher: String? = null
         )
 
-        @Serializable
         data class NewExternalKeys(
-            @SerialName("cipherKey")
+            @JsonProperty("cipherKey")
             val cipherkey: String? = null,
-            @SerialName("encryptKey")
+            @JsonProperty("encryptKey")
             val encryptKey: String? = null,
-            @SerialName("mainKey")
+            @JsonProperty("mainKey")
             val mainKey: String? = null,
         )
 

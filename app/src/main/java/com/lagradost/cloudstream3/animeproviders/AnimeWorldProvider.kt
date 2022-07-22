@@ -1,5 +1,6 @@
 package com.lagradost.cloudstream3.animeproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addAniListId
 import com.lagradost.cloudstream3.LoadResponse.Companion.addDuration
@@ -10,8 +11,6 @@ import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.nicehttp.NiceResponse
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import org.jsoup.nodes.Element
 import org.mozilla.javascript.ConsString
 import org.mozilla.javascript.Context
@@ -37,8 +36,7 @@ class AnimeWorldProvider : MainAPI() {
 //            if (cookies.isEmpty()) {
 //                cookies = getCookies(url)
 //            }
-            return app.get(
-                url
+            return app.get(url
 //                , cookies = cookies
             )
         }
@@ -234,11 +232,10 @@ class AnimeWorldProvider : MainAPI() {
         }
     }
 
-    @Serializable
     data class Json(
-        @SerialName("grabber") val grabber: String,
-        @SerialName("name") val name: String,
-        @SerialName("target") val target: String,
+        @JsonProperty("grabber") val grabber: String,
+        @JsonProperty("name") val name: String,
+        @JsonProperty("target") val target: String,
     )
 
     override suspend fun loadLinks(

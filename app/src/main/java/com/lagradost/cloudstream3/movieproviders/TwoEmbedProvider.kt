@@ -1,6 +1,7 @@
 package com.lagradost.cloudstream3.movieproviders
 
 import android.util.Log
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.APIHolder.getCaptchaToken
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.TvType
@@ -13,8 +14,6 @@ import com.lagradost.cloudstream3.movieproviders.SflixProvider.Companion.runSfli
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 class TwoEmbedProvider : TmdbProvider() {
     override val apiName = "2Embed"
@@ -27,12 +26,11 @@ class TwoEmbedProvider : TmdbProvider() {
         TvType.TvSeries,
     )
 
-    @Serializable
-    data class EmbedJson(
-        @SerialName("type") val type: String?,
-        @SerialName("link") val link: String,
-        @SerialName("sources") val sources: List<String?>,
-        @SerialName("tracks") val tracks: List<String>?
+    data class EmbedJson (
+        @JsonProperty("type") val type: String?,
+        @JsonProperty("link") val link: String,
+        @JsonProperty("sources") val sources: List<String?>,
+        @JsonProperty("tracks") val tracks: List<String>?
     )
 
     override suspend fun loadLinks(
@@ -59,13 +57,10 @@ class TwoEmbedProvider : TmdbProvider() {
             document.select("script[src*=https://www.google.com/recaptcha/api.js?render=]")
                 .attr("src").substringAfter("render=")
 
-        val servers = document.select(".dropdown-menu a[data-id]").map { it.attr("data-id") }
+        val servers =  document.select(".dropdown-menu a[data-id]").map { it.attr("data-id") }
         servers.apmap { serverID ->
             val token = getCaptchaToken(embedUrl, captchaKey)
-            val ajax = app.get(
-                "$mainUrl/ajax/embed/play?id=$serverID&_token=$token",
-                referer = embedUrl
-            ).text
+            val ajax = app.get("$mainUrl/ajax/embed/play?id=$serverID&_token=$token", referer = embedUrl).text
             val mappedservers = parseJson<EmbedJson>(ajax)
             val iframeLink = mappedservers.link
             if (iframeLink.contains("rabbitstream")) {

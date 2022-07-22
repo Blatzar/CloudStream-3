@@ -1,15 +1,15 @@
 package com.lagradost.cloudstream3.movieproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
-import kotlinx.serialization.SerialName
 import org.jsoup.nodes.Element
 import java.net.URI
-import kotlinx.serialization.Serializable
+import java.util.ArrayList
 
 class IdlixProvider : MainAPI() {
     override var mainUrl = "https://94.103.82.88"
@@ -29,10 +29,8 @@ class IdlixProvider : MainAPI() {
 
         document.select("div.items").forEach { block ->
             val header =
-                fixTitle(
-                    block.previousElementSibling()?.previousElementSibling()?.select("header > h2")
-                        ?.text()!!.trim()
-                )
+                fixTitle(block.previousElementSibling()?.previousElementSibling()?.select("header > h2")
+                    ?.text()!!.trim())
             val items = block.select("article.item").mapNotNull {
                 it.toSearchResult()
             }
@@ -77,8 +75,7 @@ class IdlixProvider : MainAPI() {
         val document = app.get(link).document
 
         return document.select("div.result-item").map {
-            val title =
-                it.selectFirst("div.title > a")!!.text().replace(Regex("\\(\\d{4}\\)"), "").trim()
+            val title = it.selectFirst("div.title > a")!!.text().replace(Regex("\\(\\d{4}\\)"), "").trim()
             val href = getProperLink(it.selectFirst("div.title > a")!!.attr("href"))
             val posterUrl = it.selectFirst("img")!!.attr("src").toString()
             newMovieSearchResponse(title, href, TvType.TvSeries) {
@@ -90,9 +87,7 @@ class IdlixProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title =
-            document.selectFirst("div.data > h1")?.text()?.replace(Regex("\\(\\d{4}\\)"), "")
-                ?.trim().toString()
+        val title = document.selectFirst("div.data > h1")?.text()?.replace(Regex("\\(\\d{4}\\)"), "")?.trim().toString()
         val poster = document.select("div.poster > img").attr("src").toString()
         val tags = document.select("div.sgeneros > a").map { it.text() }
 
@@ -162,30 +157,26 @@ class IdlixProvider : MainAPI() {
 
     private fun getLanguage(str: String): String {
         return when {
-            str.lowercase().contains("indonesia") || str.lowercase()
-                .contains("bahasa") -> "Indonesian"
+            str.lowercase().contains("indonesia") || str.lowercase().contains("bahasa") -> "Indonesian"
             else -> str
         }
     }
 
-    @Serializable
     data class ResponseHash(
-        @SerialName("embed_url") val embed_url: String,
-        @SerialName("type") val type: String?,
+        @JsonProperty("embed_url") val embed_url: String,
+        @JsonProperty("type") val type: String?,
     )
 
-    @Serializable
     data class ResponseSource(
-        @SerialName("hls") val hls: Boolean,
-        @SerialName("videoSource") val videoSource: String,
-        @SerialName("securedLink") val securedLink: String?,
+        @JsonProperty("hls") val hls: Boolean,
+        @JsonProperty("videoSource") val videoSource: String,
+        @JsonProperty("securedLink") val securedLink: String?,
     )
 
-    @Serializable
     data class Tracks(
-        @SerialName("kind") val kind: String?,
-        @SerialName("file") val file: String,
-        @SerialName("label") val label: String?,
+        @JsonProperty("kind") val kind: String?,
+        @JsonProperty("file") val file: String,
+        @JsonProperty("label") val label: String?,
     )
 
     private suspend fun invokeLokalSource(
@@ -212,8 +203,7 @@ class IdlixProvider : MainAPI() {
 
         document.select("script").map { script ->
             if (script.data().contains("eval(function(p,a,c,k,e,d)")) {
-                val subData =
-                    getAndUnpack(script.data()).substringAfter("\"tracks\":[").substringBefore("],")
+                val subData = getAndUnpack(script.data()).substringAfter("\"tracks\":[").substringBefore("],")
                 tryParseJson<List<Tracks>>("[$subData]")?.map { subtitle ->
                     subCallback.invoke(
                         SubtitleFile(
@@ -226,10 +216,9 @@ class IdlixProvider : MainAPI() {
         }
     }
 
-    @Serializable
     data class ResponseLaviolaSource(
-        @SerialName("file") val file: String,
-        @SerialName("label") val label: String?,
+        @JsonProperty("file") val file: String,
+        @JsonProperty("label") val label: String?,
     )
 
     private suspend fun invokeLaviolaSource(
@@ -274,30 +263,26 @@ class IdlixProvider : MainAPI() {
         }
     }
 
-    @Serializable
     private data class Captions(
-        @SerialName("id") val id: String,
-        @SerialName("hash") val hash: String,
-        @SerialName("language") val language: String,
+        @JsonProperty("id") val id: String,
+        @JsonProperty("hash") val hash: String,
+        @JsonProperty("language") val language: String,
     )
 
-    @Serializable
     private data class Data(
-        @SerialName("file") val file: String,
-        @SerialName("label") val label: String,
+        @JsonProperty("file") val file: String,
+        @JsonProperty("label") val label: String,
     )
 
-    @Serializable
     private data class Player(
-        @SerialName("poster_file") val poster_file: String,
+        @JsonProperty("poster_file") val poster_file: String,
     )
 
-    @Serializable
     private data class ResponseCdn(
-        @SerialName("success") val success: Boolean,
-        @SerialName("player") val player: Player,
-        @SerialName("data") val data: List<Data>?,
-        @SerialName("captions") val captions: List<Captions>?
+        @JsonProperty("success") val success: Boolean,
+        @JsonProperty("player") val player: Player,
+        @JsonProperty("data") val data: List<Data>?,
+        @JsonProperty("captions") val captions: List<Captions>?
     )
 
     private suspend fun invokeCdnSource(

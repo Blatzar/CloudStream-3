@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.annotation.FontRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.android.exoplayer2.text.Cue
 import com.google.android.exoplayer2.ui.CaptionStyleCompat
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
@@ -36,31 +37,28 @@ import com.lagradost.cloudstream3.utils.UIHelper.hideSystemUI
 import com.lagradost.cloudstream3.utils.UIHelper.navigate
 import com.lagradost.cloudstream3.utils.UIHelper.popCurrentPage
 import kotlinx.android.synthetic.main.subtitle_settings.*
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import java.io.File
 
 const val SUBTITLE_KEY = "subtitle_settings"
 const val SUBTITLE_AUTO_SELECT_KEY = "subs_auto_select"
 const val SUBTITLE_DOWNLOAD_KEY = "subs_auto_download"
 
-@Serializable
 data class SaveCaptionStyle(
-    @SerialName("foregroundColor") var foregroundColor: Int,
-    @SerialName("backgroundColor") var backgroundColor: Int,
-    @SerialName("windowColor") var windowColor: Int,
+    @JsonProperty("foregroundColor") var foregroundColor: Int,
+    @JsonProperty("backgroundColor") var backgroundColor: Int,
+    @JsonProperty("windowColor") var windowColor: Int,
     @CaptionStyleCompat.EdgeType
-    @SerialName("edgeType") var edgeType: Int,
-    @SerialName("edgeColor") var edgeColor: Int,
+    @JsonProperty("edgeType") var edgeType: Int,
+    @JsonProperty("edgeColor") var edgeColor: Int,
     @FontRes
-    @SerialName("typeface") var typeface: Int?,
-    @SerialName("typefaceFilePath") var typefaceFilePath: String?,
+    @JsonProperty("typeface") var typeface: Int?,
+    @JsonProperty("typefaceFilePath") var typefaceFilePath: String?,
     /**in dp**/
-    @SerialName("elevation") var elevation: Int,
+    @JsonProperty("elevation") var elevation: Int,
     /**in sp**/
-    @SerialName("fixedTextSize") var fixedTextSize: Float?,
-    @SerialName("removeCaptions") var removeCaptions: Boolean = false,
-    @SerialName("removeBloat") var removeBloat: Boolean = true,
+    @JsonProperty("fixedTextSize") var fixedTextSize: Float?,
+    @JsonProperty("removeCaptions") var removeCaptions: Boolean = false,
+    @JsonProperty("removeBloat") var removeBloat: Boolean = true,
 )
 
 const val DEF_SUBS_ELEVATION = 20

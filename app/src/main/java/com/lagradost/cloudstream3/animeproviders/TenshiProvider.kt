@@ -1,14 +1,13 @@
 package com.lagradost.cloudstream3.animeproviders
 
 import android.annotation.SuppressLint
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.network.DdosGuardKiller
 import com.lagradost.cloudstream3.network.getHeaders
-import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.getQualityFromName
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import org.jsoup.nodes.Document
 import java.net.URI
 import java.text.SimpleDateFormat
@@ -140,16 +139,15 @@ class TenshiProvider : MainAPI() {
         }
     }
 
-//    @Serializable
-//    @Serializable data class TenshiSearchResponse(
-//        @SerialName("url") var url : String,
-//        @SerialName("title") var title : String,
-//        @SerialName("cover") var cover : String,
-//        @SerialName("genre") var genre : String,
-//        @SerialName("year") var year : Int,
-//        @SerialName("type") var type : String,
-//        @SerialName("eps") var eps : String,
-//        @SerialName("cen") var cen : String
+//    data class TenshiSearchResponse(
+//        @JsonProperty("url") var url : String,
+//        @JsonProperty("title") var title : String,
+//        @JsonProperty("cover") var cover : String,
+//        @JsonProperty("genre") var genre : String,
+//        @JsonProperty("year") var year : Int,
+//        @JsonProperty("type") var type : String,
+//        @JsonProperty("eps") var eps : String,
+//        @JsonProperty("cen") var cen : String
 //    )
 
 //    override suspend fun quickSearch(query: String): ArrayList<SearchResponse>? {
@@ -163,7 +161,7 @@ class TenshiProvider : MainAPI() {
 //
 //        )
 //
-//        val items = parseJson<List<TenshiSearchResponse>>(response.text)
+//        val items = mapper.readValue<List<TenshiSearchResponse>>(response.text)
 //
 //        if (items.isEmpty()) return ArrayList()
 //
@@ -307,10 +305,9 @@ class TenshiProvider : MainAPI() {
     ): Boolean {
         val soup = app.get(data, interceptor = ddosGuardKiller).document
 
-        @Serializable
         data class Quality(
-            @SerialName("src") val src: String,
-            @SerialName("size") val size: Int
+            @JsonProperty("src") val src: String,
+            @JsonProperty("size") val size: Int
         )
 
         for (source in soup.select("""[aria-labelledby="mirror-dropdown"] > li > a.dropdown-item""")) {
@@ -324,7 +321,7 @@ class TenshiProvider : MainAPI() {
                 sourceHTML
             )
             if (match != null) {
-                val qualities = parseJson<List<Quality>>(
+                val qualities = mapper.readValue<List<Quality>>(
                     match.destructured.component1()
                         .replace("'", "\"")
                         .replace(Regex("""(\w+): """), "\"\$1\": ")
@@ -340,8 +337,7 @@ class TenshiProvider : MainAPI() {
                             fixUrl(it.src),
                             this.mainUrl,
                             getQualityFromName("${it.size}"),
-                            headers = getHeaders(
-                                emptyMap(),
+                            headers = getHeaders(emptyMap(),
                                 ddosGuardKiller.savedCookiesMap[URI(this.mainUrl).host]
                                     ?: emptyMap()
                             ).toMap()

@@ -1,12 +1,10 @@
 package com.lagradost.cloudstream3.movieproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
-import kotlinx.serialization.SerialName
 import org.jsoup.nodes.Element
-
-import kotlinx.serialization.Serializable
 
 class EgyBestProvider : MainAPI() {
     override var lang = "ar"
@@ -159,8 +157,8 @@ class EgyBestProvider : MainAPI() {
         }
     }
     data class Sources (
-        @SerialName("quality") val quality: Int?,
-        @SerialName("link") val link: String
+        @JsonProperty("quality") val quality: Int?,
+        @JsonProperty("link") val link: String
     )
 
     override suspend fun loadLinks(
@@ -224,8 +222,7 @@ class EgyBestProvider : MainAPI() {
                     link,
                     this.mainUrl,
                     quality!!,
-                    true,
-                    headers = mapOf("range" to "bytes=0-"),
+                    true
                 )
             )
         }

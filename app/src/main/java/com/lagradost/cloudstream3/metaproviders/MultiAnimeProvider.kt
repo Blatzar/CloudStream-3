@@ -10,8 +10,6 @@ import com.lagradost.cloudstream3.syncproviders.providers.MALApi
 import com.lagradost.cloudstream3.utils.SyncUtil
 
 // wont be implemented
-import kotlinx.serialization.Serializable
-
 class MultiAnimeProvider : MainAPI() {
     override var name = "MultiAnime"
     override var lang = "en"

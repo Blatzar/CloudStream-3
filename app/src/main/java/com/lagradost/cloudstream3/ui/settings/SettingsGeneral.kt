@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.hippo.unifile.UniFile
 import com.lagradost.cloudstream3.APIHolder.allProviders
 import com.lagradost.cloudstream3.AcraApplication
@@ -34,9 +35,7 @@ import com.lagradost.cloudstream3.utils.VideoDownloadManager
 import com.lagradost.cloudstream3.utils.VideoDownloadManager.getBasePath
 import kotlinx.android.synthetic.main.add_remove_sites.*
 import kotlinx.android.synthetic.main.add_site_input.*
-import kotlinx.serialization.SerialName
 import java.io.File
-import kotlinx.serialization.Serializable
 
 class SettingsGeneral : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,15 +43,14 @@ class SettingsGeneral : PreferenceFragmentCompat() {
         setUpToolbar(R.string.category_general)
     }
 
-    @Serializable
     data class CustomSite(
-        @SerialName("parentJavaClass") // javaClass.simpleName
+        @JsonProperty("parentJavaClass") // javaClass.simpleName
         val parentJavaClass: String,
-        @SerialName("name")
+        @JsonProperty("name")
         val name: String,
-        @SerialName("url")
+        @JsonProperty("url")
         val url: String,
-        @SerialName("lang")
+        @JsonProperty("lang")
         val lang: String,
     )
 

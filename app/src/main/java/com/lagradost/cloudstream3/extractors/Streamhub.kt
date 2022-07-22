@@ -7,8 +7,6 @@ import com.lagradost.cloudstream3.utils.JsUnpacker
 import com.lagradost.cloudstream3.utils.Qualities
 import java.net.URI
 
-import kotlinx.serialization.Serializable
-
 class Streamhub : ExtractorApi() {
     override var mainUrl = "https://streamhub.to"
     override var name = "Streamhub"

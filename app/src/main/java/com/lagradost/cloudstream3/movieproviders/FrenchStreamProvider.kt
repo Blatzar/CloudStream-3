@@ -7,8 +7,6 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.extractorApis
 
 
-import kotlinx.serialization.Serializable
-
 class FrenchStreamProvider : MainAPI() {
     override var mainUrl = "https://french-stream.re"
     override var name = "French Stream"

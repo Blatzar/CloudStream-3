@@ -10,8 +10,6 @@ import org.jsoup.nodes.Document
 import java.util.*
 
 
-import kotlinx.serialization.Serializable
-
 class WcoProvider : MainAPI() {
     companion object {
         fun getType(t: String): TvType {
@@ -58,8 +56,7 @@ class WcoProvider : MainAPI() {
                         nameHeader.attr("href").replace("/watch/", "/anime/")
                             .replace(Regex("-episode-.*"), "/")
                     val isDub =
-                        filmPoster!!.selectFirst("> div.film-poster-quality")?.text()
-                            ?.contains("DUB")
+                        filmPoster!!.selectFirst("> div.film-poster-quality")?.text()?.contains("DUB")
                             ?: false
                     val poster = filmPoster.selectFirst("> img")!!.attr("data-src")
                     val set: EnumSet<DubStatus> =

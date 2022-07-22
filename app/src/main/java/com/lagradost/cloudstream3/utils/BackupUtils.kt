@@ -9,44 +9,41 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.CommonActivity.showToast
 import com.lagradost.cloudstream3.R
 import com.lagradost.cloudstream3.mvvm.logError
-import com.lagradost.cloudstream3.utils.AppUtils.parseJson
-import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import com.lagradost.cloudstream3.utils.DataStore.getDefaultSharedPrefs
 import com.lagradost.cloudstream3.utils.DataStore.getSharedPrefs
+import com.lagradost.cloudstream3.utils.DataStore.mapper
 import com.lagradost.cloudstream3.utils.DataStore.setKeyRaw
 import com.lagradost.cloudstream3.utils.UIHelper.checkWrite
 import com.lagradost.cloudstream3.utils.UIHelper.requestRW
 import com.lagradost.cloudstream3.utils.VideoDownloadManager.getBasePath
 import com.lagradost.cloudstream3.utils.VideoDownloadManager.isDownloadDir
-import kotlinx.serialization.SerialName
 import java.io.IOException
 import java.io.PrintWriter
 import java.lang.System.currentTimeMillis
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlinx.serialization.Serializable
 
 object BackupUtils {
     var restoreFileSelector: ActivityResultLauncher<Array<String>>? = null
 
     // Kinda hack, but I couldn't think of a better way
-    @Serializable
     data class BackupVars(
-        @SerialName("_Bool") val _Bool: Map<String, Boolean>?,
-        @SerialName("_Int") val _Int: Map<String, Int>?,
-        @SerialName("_String") val _String: Map<String, String>?,
-        @SerialName("_Float") val _Float: Map<String, Float>?,
-        @SerialName("_Long") val _Long: Map<String, Long>?,
-        @SerialName("_StringSet") val _StringSet: Map<String, Set<String>?>?,
+        @JsonProperty("_Bool") val _Bool: Map<String, Boolean>?,
+        @JsonProperty("_Int") val _Int: Map<String, Int>?,
+        @JsonProperty("_String") val _String: Map<String, String>?,
+        @JsonProperty("_Float") val _Float: Map<String, Float>?,
+        @JsonProperty("_Long") val _Long: Map<String, Long>?,
+        @JsonProperty("_StringSet") val _StringSet: Map<String, Set<String>?>?,
     )
 
-    @Serializable
     data class BackupFile(
-        @SerialName("datastore") val datastore: BackupVars,
-        @SerialName("settings") val settings: BackupVars
+        @JsonProperty("datastore") val datastore: BackupVars,
+        @JsonProperty("settings") val settings: BackupVars
     )
 
     fun FragmentActivity.backup() {
@@ -116,7 +113,7 @@ object BackupUtils {
                     }
 
                 val printStream = PrintWriter(steam)
-                printStream.print(backupFile.toJson())
+                printStream.print(mapper.writeValueAsString(backupFile))
                 printStream.close()
 
                 showToast(
@@ -155,7 +152,7 @@ object BackupUtils {
                                         ?: return@registerForActivityResult
 
                                 val restoredValue =
-                                    parseJson<BackupFile>(input.bufferedReader().readText())
+                                    mapper.readValue<BackupFile>(input)
                                 activity.restore(
                                     restoredValue,
                                     restoreSettings = true,
@@ -194,8 +191,8 @@ object BackupUtils {
                         "content/unknown",
                     )
                 )
-            } catch (e: Exception) {
-                showToast(this, e.message)
+            } catch (e : Exception) {
+                showToast(this,e.message)
                 logError(e)
             }
         }

@@ -1,14 +1,12 @@
 package com.lagradost.cloudstream3.animeproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.loadExtractor
-import kotlinx.serialization.SerialName
+import com.lagradost.cloudstream3.utils.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-
-import kotlinx.serialization.Serializable
+import java.util.ArrayList
 
 class NontonAnimeIDProvider : MainAPI() {
     override var mainUrl = "https://75.119.159.228"
@@ -136,11 +134,11 @@ class NontonAnimeIDProvider : MainAPI() {
         }
     }
 
-    @Serializable private data class EpResponse(
-        @SerialName("posts") val posts: String?,
-        @SerialName("max_page") val max_page: Int?,
-        @SerialName("found_posts") val found_posts: Int?,
-        @SerialName("content") val content: String
+    private data class EpResponse(
+        @JsonProperty("posts") val posts: String?,
+        @JsonProperty("max_page") val max_page: Int?,
+        @JsonProperty("found_posts") val found_posts: Int?,
+        @JsonProperty("content") val content: String
     )
 
     override suspend fun load(url: String): LoadResponse {

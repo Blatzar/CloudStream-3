@@ -1,5 +1,6 @@
 package com.lagradost.cloudstream3.animeproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.mvvm.normalSafeApiCall
 import com.lagradost.cloudstream3.mvvm.safeApiCall
@@ -7,8 +8,6 @@ import com.lagradost.cloudstream3.utils.AppUtils
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.getQualityFromName
 import com.lagradost.cloudstream3.utils.loadExtractor
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.net.URI
@@ -324,21 +323,19 @@ class GogoanimeProvider : MainAPI() {
         }
     }
 
-    @Serializable
     data class GogoSources(
-        @SerialName("source") val source: List<GogoSource>?,
-        @SerialName("sourceBk") val sourceBk: List<GogoSource>?,
+        @JsonProperty("source") val source: List<GogoSource>?,
+        @JsonProperty("sourceBk") val sourceBk: List<GogoSource>?,
         //val track: List<Any?>,
         //val advertising: List<Any?>,
         //val linkiframe: String
     )
 
-    @Serializable
     data class GogoSource(
-        @SerialName("file") val file: String,
-        @SerialName("label") val label: String?,
-        @SerialName("type") val type: String?,
-        @SerialName("default") val default: String? = null
+        @JsonProperty("file") val file: String,
+        @JsonProperty("label") val label: String?,
+        @JsonProperty("type") val type: String?,
+        @JsonProperty("default") val default: String? = null
     )
 
     private suspend fun extractVideos(uri: String, callback: (ExtractorLink) -> Unit) {

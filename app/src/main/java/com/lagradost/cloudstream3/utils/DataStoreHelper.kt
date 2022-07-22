@@ -1,5 +1,6 @@
 package com.lagradost.cloudstream3.utils
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.AcraApplication.Companion.getKey
 import com.lagradost.cloudstream3.AcraApplication.Companion.getKeys
 import com.lagradost.cloudstream3.AcraApplication.Companion.removeKey
@@ -9,8 +10,6 @@ import com.lagradost.cloudstream3.SearchQuality
 import com.lagradost.cloudstream3.SearchResponse
 import com.lagradost.cloudstream3.TvType
 import com.lagradost.cloudstream3.ui.WatchType
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 const val VIDEO_POS_DUR = "video_pos_dur"
 const val RESULT_WATCH_STATE = "result_watch_state"
@@ -22,10 +21,9 @@ const val RESULT_SEASON = "result_season"
 const val RESULT_DUB = "result_dub"
 
 object DataStoreHelper {
-    @Serializable
     data class PosDur(
-        @SerialName("position") val position: Long,
-        @SerialName("duration") val duration: Long
+        @JsonProperty("position") val position: Long,
+        @JsonProperty("duration") val duration: Long
     )
 
     fun PosDur.fixVisual(): PosDur {
@@ -37,38 +35,36 @@ object DataStoreHelper {
         return this
     }
 
-    @Serializable
     data class BookmarkedData(
-        @SerialName("id") override var id: Int?,
-        @SerialName("bookmarkedTime") val bookmarkedTime: Long,
-        @SerialName("latestUpdatedTime") val latestUpdatedTime: Long,
-        @SerialName("name") override val name: String,
-        @SerialName("url") override val url: String,
-        @SerialName("apiName") override val apiName: String,
-        @SerialName("type") override var type: TvType? = null,
-        @SerialName("posterUrl") override var posterUrl: String?,
-        @SerialName("year") val year: Int?,
-        @SerialName("quality") override var quality: SearchQuality? = null,
-        @SerialName("posterHeaders") override var posterHeaders: Map<String, String>? = null,
+        @JsonProperty("id") override var id: Int?,
+        @JsonProperty("bookmarkedTime") val bookmarkedTime: Long,
+        @JsonProperty("latestUpdatedTime") val latestUpdatedTime: Long,
+        @JsonProperty("name") override val name: String,
+        @JsonProperty("url") override val url: String,
+        @JsonProperty("apiName") override val apiName: String,
+        @JsonProperty("type") override var type: TvType? = null,
+        @JsonProperty("posterUrl") override var posterUrl: String?,
+        @JsonProperty("year") val year: Int?,
+        @JsonProperty("quality") override var quality: SearchQuality? = null,
+        @JsonProperty("posterHeaders") override var posterHeaders: Map<String, String>? = null,
     ) : SearchResponse
 
-    @Serializable
     data class ResumeWatchingResult(
-        @SerialName("name") override val name: String,
-        @SerialName("url") override val url: String,
-        @SerialName("apiName") override val apiName: String,
-        @SerialName("type") override var type: TvType? = null,
-        @SerialName("posterUrl") override var posterUrl: String?,
+        @JsonProperty("name") override val name: String,
+        @JsonProperty("url") override val url: String,
+        @JsonProperty("apiName") override val apiName: String,
+        @JsonProperty("type") override var type: TvType? = null,
+        @JsonProperty("posterUrl") override var posterUrl: String?,
 
-        @SerialName("watchPos") val watchPos: PosDur? = null,
+        @JsonProperty("watchPos") val watchPos: PosDur?,
 
-        @SerialName("id") override var id: Int?,
-        @SerialName("parentId") val parentId: Int?,
-        @SerialName("episode") val episode: Int?,
-        @SerialName("season") val season: Int?,
-        @SerialName("isFromDownload") val isFromDownload: Boolean,
-        @SerialName("quality") override var quality: SearchQuality? = null,
-        @SerialName("posterHeaders") override var posterHeaders: Map<String, String>? = null,
+        @JsonProperty("id") override var id: Int?,
+        @JsonProperty("parentId") val parentId: Int?,
+        @JsonProperty("episode") val episode: Int?,
+        @JsonProperty("season") val season: Int?,
+        @JsonProperty("isFromDownload") val isFromDownload: Boolean,
+        @JsonProperty("quality") override var quality: SearchQuality? = null,
+        @JsonProperty("posterHeaders") override var posterHeaders: Map<String, String>? = null,
     ) : SearchResponse
 
     private var currentAccount: String = "0" //TODO ACCOUNT IMPLEMENTATION
@@ -154,7 +150,7 @@ object DataStoreHelper {
         )
     }
 
-    private fun getLastWatchedOld(id: Int?): VideoDownloadHelper.ResumeWatching? {
+    fun getLastWatchedOld(id: Int?): VideoDownloadHelper.ResumeWatching? {
         if (id == null) return null
         return getKey(
             "$currentAccount/$RESULT_RESUME_WATCHING_OLD",

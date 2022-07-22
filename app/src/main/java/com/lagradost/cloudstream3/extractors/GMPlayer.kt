@@ -5,8 +5,6 @@ import com.lagradost.cloudstream3.utils.ExtractorApi
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 
-import kotlinx.serialization.Serializable
-
 class GMPlayer : ExtractorApi() {
     override val name = "GM Player"
     override val mainUrl = "https://gmplayer.xyz"

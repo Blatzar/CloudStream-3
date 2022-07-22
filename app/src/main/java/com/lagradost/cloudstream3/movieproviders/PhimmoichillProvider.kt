@@ -1,17 +1,14 @@
 package com.lagradost.cloudstream3.movieproviders
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.safeApiCall
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.ExtractorLinkPlayList
-import com.lagradost.cloudstream3.utils.PlayListItem
-import com.lagradost.cloudstream3.utils.Qualities
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
 import java.net.URLDecoder
+import java.util.ArrayList
 
 class PhimmoichillProvider : MainAPI() {
     override var mainUrl = "https://phimmoichill.net"
@@ -179,11 +176,11 @@ class PhimmoichillProvider : MainAPI() {
                 } else {
                     val playList = app.get(link, referer = "$mainUrl/")
                         .parsedSafe<ResponseM3u>()?.main?.segments?.map { segment ->
-                            PlayListItem(
-                                segment.link,
-                                (segment.du.toFloat() * 1_000_000).toLong()
-                            )
-                        }
+                        PlayListItem(
+                            segment.link,
+                            (segment.du.toFloat() * 1_000_000).toLong()
+                        )
+                    }
 
                     callback.invoke(
                         ExtractorLinkPlayList(
@@ -204,17 +201,17 @@ class PhimmoichillProvider : MainAPI() {
         return true
     }
 
-    @Serializable
     data class Segment(
-        @SerialName("du") val du: String,
-        @SerialName("link") val link: String,
+        @JsonProperty("du") val du: String,
+        @JsonProperty("link") val link: String,
     )
 
     data class DataM3u(
-        @SerialName("segments") val segments: List<Segment>?,
+        @JsonProperty("segments") val segments: List<Segment>?,
     )
 
     data class ResponseM3u(
-        @SerialName("2048p") val main: DataM3u?,
+        @JsonProperty("2048p") val main: DataM3u?,
     )
+
 }

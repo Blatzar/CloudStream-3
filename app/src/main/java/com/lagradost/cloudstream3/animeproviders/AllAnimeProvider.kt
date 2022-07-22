@@ -1,6 +1,7 @@
 package com.lagradost.cloudstream3.animeproviders
 
-
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
@@ -8,13 +9,12 @@ import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
 import java.net.URI
 import java.net.URLDecoder
+
 
 class AllAnimeProvider : MainAPI() {
     override var mainUrl = "https://allanime.site"
@@ -32,88 +32,77 @@ class AllAnimeProvider : MainAPI() {
 
     override val supportedTypes = setOf(TvType.Anime, TvType.AnimeMovie)
 
-    @Serializable
     private data class Data(
-        @SerialName("shows") val shows: Shows
+        @JsonProperty("shows") val shows: Shows
     )
 
-    @Serializable
     private data class Shows(
-        @SerialName("pageInfo") val pageInfo: PageInfo,
-        @SerialName("edges") val edges: List<Edges>,
-        @SerialName("__typename") val _typename: String
+        @JsonProperty("pageInfo") val pageInfo: PageInfo,
+        @JsonProperty("edges") val edges: List<Edges>,
+        @JsonProperty("__typename") val _typename: String
     )
 
-    @Serializable
     private data class Edges(
-        @SerialName("_id") val Id: String?,
-        @SerialName("name") val name: String,
-        @SerialName("englishName") val englishName: String?,
-        @SerialName("nativeName") val nativeName: String?,
-        @SerialName("thumbnail") val thumbnail: String?,
-        @SerialName("type") val type: String?,
-        @SerialName("season") val season: Season?,
-        @SerialName("score") val score: Double?,
-        @SerialName("airedStart") val airedStart: AiredStart?,
-        @SerialName("availableEpisodes") val availableEpisodes: AvailableEpisodes?,
-        @SerialName("availableEpisodesDetail") val availableEpisodesDetail: AvailableEpisodesDetail?,
-        @SerialName("studios") val studios: List<String>?,
-        @SerialName("description") val description: String?,
-        @SerialName("status") val status: String?,
+        @JsonProperty("_id") val Id: String?,
+        @JsonProperty("name") val name: String,
+        @JsonProperty("englishName") val englishName: String?,
+        @JsonProperty("nativeName") val nativeName: String?,
+        @JsonProperty("thumbnail") val thumbnail: String?,
+        @JsonProperty("type") val type: String?,
+        @JsonProperty("season") val season: Season?,
+        @JsonProperty("score") val score: Double?,
+        @JsonProperty("airedStart") val airedStart: AiredStart?,
+        @JsonProperty("availableEpisodes") val availableEpisodes: AvailableEpisodes?,
+        @JsonProperty("availableEpisodesDetail") val availableEpisodesDetail: AvailableEpisodesDetail?,
+        @JsonProperty("studios") val studios: List<String>?,
+        @JsonProperty("description") val description: String?,
+        @JsonProperty("status") val status: String?,
     )
 
-    @Serializable
     private data class AvailableEpisodes(
-        @SerialName("sub") val sub: Int,
-        @SerialName("dub") val dub: Int,
-        @SerialName("raw") val raw: Int
+        @JsonProperty("sub") val sub: Int,
+        @JsonProperty("dub") val dub: Int,
+        @JsonProperty("raw") val raw: Int
     )
 
-    @Serializable
     private data class AiredStart(
-        @SerialName("year") val year: Int,
-        @SerialName("month") val month: Int,
-        @SerialName("date") val date: Int
+        @JsonProperty("year") val year: Int,
+        @JsonProperty("month") val month: Int,
+        @JsonProperty("date") val date: Int
     )
 
-    @Serializable
     private data class Season(
-        @SerialName("quarter") val quarter: String,
-        @SerialName("year") val year: Int
+        @JsonProperty("quarter") val quarter: String,
+        @JsonProperty("year") val year: Int
     )
 
-    @Serializable
     private data class PageInfo(
-        @SerialName("total") val total: Int,
-        @SerialName("__typename") val _typename: String
+        @JsonProperty("total") val total: Int,
+        @JsonProperty("__typename") val _typename: String
     )
 
-    @Serializable
     private data class AllAnimeQuery(
-        @SerialName("data") val data: Data
+        @JsonProperty("data") val data: Data
     )
 
-    @Serializable
     data class RandomMain(
-        @SerialName("data") var data: DataRan? = DataRan()
+        @JsonProperty("data") var data: DataRan? = DataRan()
     )
 
-    @Serializable
     data class DataRan(
-        @SerialName("queryRandomRecommendation") var queryRandomRecommendation: ArrayList<QueryRandomRecommendation> = arrayListOf()
+        @JsonProperty("queryRandomRecommendation") var queryRandomRecommendation: ArrayList<QueryRandomRecommendation> = arrayListOf()
     )
 
-    @Serializable
     data class QueryRandomRecommendation(
-        @SerialName("_id") val Id: String? = null,
-        @SerialName("name") val name: String? = null,
-        @SerialName("englishName") val englishName: String? = null,
-        @SerialName("nativeName") val nativeName: String? = null,
-        @SerialName("thumbnail") val thumbnail: String? = null,
-        @SerialName("airedStart") val airedStart: String? = null,
-        @SerialName("availableChapters") val availableChapters: String? = null,
-        @SerialName("availableEpisodes") val availableEpisodes: String? = null,
-        @SerialName("__typename") val _typename: String? = null
+        @JsonProperty("_id") val Id: String? = null,
+        @JsonProperty("name") val name: String? = null,
+        @JsonProperty("englishName") val englishName: String? = null,
+        @JsonProperty("nativeName") val nativeName: String? = null,
+        @JsonProperty("thumbnail") val thumbnail: String? = null,
+        @JsonProperty("airedStart") val airedStart: String? = null,
+        @JsonProperty("availableChapters") val availableChapters: String? = null,
+        @JsonProperty("availableEpisodes") val availableEpisodes: String? = null,
+        @JsonProperty("__typename") val _typename: String? = null
     )
 
     override suspend fun getMainPage(): HomePageResponse {
@@ -176,7 +165,7 @@ class AllAnimeProvider : MainAPI() {
             res = app.get(link).text
             if (res.contains("PERSISTED_QUERY_NOT_FOUND")) return emptyList()
         }
-        val response = parseJson<AllAnimeQuery>(res)
+        val response = mapper.readValue<AllAnimeQuery>(res)
 
         val results = response.data.shows.edges.filter {
             // filtering in case there is an anime with 0 episodes available on the site.
@@ -194,11 +183,10 @@ class AllAnimeProvider : MainAPI() {
         }
     }
 
-    @Serializable
     private data class AvailableEpisodesDetail(
-        @SerialName("sub") val sub: List<String>,
-        @SerialName("dub") val dub: List<String>,
-        @SerialName("raw") val raw: List<String>
+        @JsonProperty("sub") val sub: List<String>,
+        @JsonProperty("dub") val dub: List<String>,
+        @JsonProperty("raw") val raw: List<String>
     )
 
 
@@ -223,7 +211,7 @@ class AllAnimeProvider : MainAPI() {
 
         rhino.evaluateString(scope, js, "JavaScript", 1, null)
         val jsEval = scope.get("returnValue", scope) ?: return null
-        val showData = parseJson<Edges>(jsEval as String)
+        val showData = mapper.readValue<Edges>(jsEval as String)
 
         val title = showData.name
         val description = showData.description
@@ -310,22 +298,19 @@ class AllAnimeProvider : MainAPI() {
         return out
     }
 
-    @Serializable
     private data class Links(
-        @SerialName("link") val link: String,
-        @SerialName("hls") val hls: Boolean?,
-        @SerialName("resolutionStr") val resolutionStr: String,
-        @SerialName("src") val src: String?
+        @JsonProperty("link") val link: String,
+        @JsonProperty("hls") val hls: Boolean?,
+        @JsonProperty("resolutionStr") val resolutionStr: String,
+        @JsonProperty("src") val src: String?
     )
 
-    @Serializable
     private data class AllAnimeVideoApiResponse(
-        @SerialName("links") val links: List<Links>
+        @JsonProperty("links") val links: List<Links>
     )
 
-    @Serializable
     private data class ApiEndPoint(
-        @SerialName("episodeIframeHead") val episodeIframeHead: String
+        @JsonProperty("episodeIframeHead") val episodeIframeHead: String
     )
 
     private fun getM3u8Qualities(
@@ -348,7 +333,7 @@ class AllAnimeProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         var apiEndPoint =
-            parseJson<ApiEndPoint>(app.get("$mainUrl/getVersion").text).episodeIframeHead
+            mapper.readValue<ApiEndPoint>(app.get("$mainUrl/getVersion").text).episodeIframeHead
         if (apiEndPoint.endsWith("/")) apiEndPoint =
             apiEndPoint.slice(0 until apiEndPoint.length - 1)
 
@@ -385,7 +370,7 @@ class AllAnimeProvider : MainAPI() {
                     val response = app.get(link)
 
                     if (response.code < 400) {
-                        val links = parseJson<AllAnimeVideoApiResponse>(response.text).links
+                        val links = mapper.readValue<AllAnimeVideoApiResponse>(response.text).links
                         links.forEach { server ->
                             if (server.hls != null && server.hls) {
                                 getM3u8Qualities(
